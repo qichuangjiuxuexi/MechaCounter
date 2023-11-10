@@ -41,3 +41,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: UI
+    uniqueID: 3180303295
+    locked: 0
+  - name: Guide
+    uniqueID: 4055331297
+    locked: 0
+  - name: FX
+    uniqueID: 2340368975
+    locked: 0
