@@ -1,7 +1,6 @@
-/*
 using System;
 using System.Collections.Generic;
-using AppBase.Module;
+using QFramework;
 using UnityEngine;
 using WordGame.Utils;
 using Object = UnityEngine.Object;
@@ -144,4 +143,3 @@ namespace AppBase.Resource
         }
     }
 }
-*/

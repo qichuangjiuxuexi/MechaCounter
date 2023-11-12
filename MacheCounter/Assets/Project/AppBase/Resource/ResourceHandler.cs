@@ -1,4 +1,4 @@
-/*using System;
+using System;
 using System.Collections;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -103,7 +103,7 @@ namespace AppBase.Resource
                 handler.Completed -= OnLoadCompleted;
                 Addressables.Release(handler);
             }
-            Game.Resource.OnHandlerDestroy(this);
+            MacheCounter.Interface.GetSystem<IResourceSystem>().OnHandlerDestroy(this);
         }
 
         /// <summary>
@@ -155,4 +155,4 @@ namespace AppBase.Resource
         public void Reset() {}
         #endregion
     }
-}*/
+}

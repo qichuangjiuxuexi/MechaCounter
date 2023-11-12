@@ -1,23 +1,43 @@
-/*using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using AppBase.Module;
+using QFramework;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using Object = UnityEngine.Object;
 
 namespace AppBase.Resource
-{
+{    
+    public interface IResourceSystem : ISystem
+    {
+        /// <summary>
+        /// 当加载器引用计数为0时，自动释放资源
+        /// </summary>
+        public bool OnHandlerDestroy(ResourceHandler handler);
+    }
+
+    public abstract class AbstractResource : AbstractSystem, IResourceSystem
+    {
+        public bool OnHandlerDestroy(ResourceHandler handler)
+        {
+            return false;
+        }
+    }
     /// <summary>
     /// 资源管理器
     /// </summary>
-    public class ResourceManager : MonoModule
+    public class ResourceManager : AbstractResource
     {
         /// <summary>
         /// 资源缓存池
         /// </summary>
         protected Dictionary<string, ResourceHandler> assetsPool = new();
+
+        protected override void OnInit()
+        {
+            
+        }
 
         /// <summary>
         /// 加载资源
@@ -152,4 +172,4 @@ namespace AppBase.Resource
             return Addressables.ResourceLocators.Any(r => r.Locate(address, typeof(T), out _));
         }
     }
-}*/
+}
