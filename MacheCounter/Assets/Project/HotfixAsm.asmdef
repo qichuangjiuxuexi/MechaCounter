@@ -2,11 +2,13 @@
     "name": "HotfixAsm",
     "rootNamespace": "",
     "references": [
-        "GUID:be725ffb03a5f4c0cbab150ad1dd3bc8",
         "GUID:4ad1387d1e5bb4d00984c0a126e2dee9",
         "GUID:9e24947de15b9834991c9d8411ea37cf",
         "GUID:6055be8ebefd69e48b49212b09b47b2f",
-        "GUID:f06555f75b070af458a003d92f9efb00"
+        "GUID:f06555f75b070af458a003d92f9efb00",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:69448af7b92c7f342b298e06a37122aa",
+        "GUID:84651a3751eca9349aac36a66bba901b"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
