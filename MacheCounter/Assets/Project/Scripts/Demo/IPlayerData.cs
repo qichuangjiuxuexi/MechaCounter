@@ -6,7 +6,7 @@ namespace Project.Scripts
     /// <summary>
     /// 数据参数
     /// </summary>
-    public interface IPlayerData : IBaseProperty
+    public interface IPlayerData : IBaseAttribute
     {
         /// <summary>
         /// 枪械攻击力
@@ -69,7 +69,7 @@ namespace Project.Scripts
         public int SwordIncreased { get; }
     }
 
-    public interface IBaseProperty
+    public interface IBaseAttribute
     {
         /// <summary>
         /// 攻击力（普攻和招式）
@@ -84,17 +84,96 @@ namespace Project.Scripts
         /// <summary>
         /// 装甲耐久
         /// </summary>
-        public long Blood { get; }
+        public long Hp { get; }
         
         /// <summary>
         /// 能量
         /// </summary>
-        public long Energy { get; }
+        public long Mp { get; }
         
         /// <summary>
         /// 聚能
         /// </summary>
-        public long GetEnergy { get; }
+        public long Speed { get; }
+    }
+    
+    /// <summary>
+    /// 属性类型
+    /// </summary>
+    public enum EAttributeType
+    {
+        /// <summary>
+        /// 攻击
+        /// </summary>
+        Atk = 1,
+        /// <summary>
+        /// 防御
+        /// </summary>
+        Dfs = 2,
+        /// <summary>
+        /// 气血
+        /// </summary>
+        Hp = 3,
+        /// <summary>
+        /// 魔力值
+        /// </summary>
+        Mp = 4,
+        /// <summary>
+        /// 聚能
+        /// </summary>
+        Speed = 5,
+        /// <summary>
+        /// 武器系列攻击
+        /// </summary>
+        FourAtk = 6,
+        /// <summary>
+        /// 枪械系攻击
+        /// </summary>
+        GunAtk = 7,
+        /// <summary>
+        /// 炮系攻击
+        /// </summary>
+        CannonAtk = 8,
+        /// <summary>
+        /// 拳系攻击
+        /// </summary>
+        BoxingAtk = 9,
+        /// <summary>
+        /// 刀剑系攻击
+        /// </summary>
+        SwordAtk = 10,
+        /// <summary>
+        /// 枪械系减伤
+        /// </summary>
+        GunReduce = 11,
+        /// <summary>
+        /// 拳系减伤
+        /// </summary>
+        BoxingReduce = 12,
+        /// <summary>
+        /// 炮系减伤
+        /// </summary>
+        CannonReduce = 13,
+        /// <summary>
+        /// 刀剑系减伤
+        /// </summary>
+        SwordReduce = 14,
+        /// <summary>
+        /// 枪械系增伤
+        /// </summary>
+        GunIncreased = 15,
+        /// <summary>
+        /// 拳系增伤
+        /// </summary>
+        BoxingIncreased = 16,
+        /// <summary>
+        /// 炮系增伤
+        /// </summary>
+        CannonIncreased = 17,
+        /// <summary>
+        /// 刀剑系增伤
+        /// </summary>
+        SwordIncreased = 18,
     }
 
     public interface IPropertyItem
@@ -102,7 +181,7 @@ namespace Project.Scripts
         /// <summary>
         /// 属性类型
         /// </summary>
-        public EPropertyType Type { get; }
+        public EAttributeType Type { get; }
         
         /// <summary>
         /// 属性参数
@@ -112,64 +191,13 @@ namespace Project.Scripts
 
     public class PropertyItem : IPropertyItem
     {
-        public EPropertyType Type { get; }
+        public EAttributeType Type { get; }
         public long Num { get; }
 
         public PropertyItem(int type, long num)
         {
-            Type = (EPropertyType)type;
+            Type = (EAttributeType)type;
             Num = num;
-        }
-    }
-
-    /// <summary>
-    /// 装备属性
-    /// </summary>
-    public interface IEquipmentProperty
-    {
-        /// <summary>
-        /// 类型: 装备位置
-        /// </summary>
-        public EEquipmentType Type { get;}
-        
-        /// <summary>
-        /// 装备等级
-        /// </summary>
-        public int Level { get;}
-
-        /// <summary>
-        /// 属性
-        /// </summary>
-        public List<IPropertyItem> PropertyItems { get;}
-
-        /// <summary>
-        /// 初始化参数
-        /// </summary>
-        /// <param name="type">类型</param>
-        /// <param name="level">等级</param>
-        /// <param name="item">属性</param>
-        public void SetPropertyItems(int type, int level, params IPropertyItem[] item);
-    }
-
-    /// <summary>
-    /// 单个装备
-    /// </summary>
-    public class AEquipmentProperty : IEquipmentProperty
-    {
-        public EEquipmentType Type { get; private set; }
-        
-        public int Level { get; private set; }
-        
-        public List<IPropertyItem> PropertyItems => propertyItems;
-
-        private readonly List<IPropertyItem> propertyItems = new();
-
-        public void SetPropertyItems(int type, int level, params IPropertyItem[] items)
-        {
-            Type = (EEquipmentType)type;
-            Level = level;
-            if (items is not { Length: > 0 }) 
-                items.ForEach(p => propertyItems.Add(new PropertyItem((int)p.Type, p.Num)));
         }
     }
 }
