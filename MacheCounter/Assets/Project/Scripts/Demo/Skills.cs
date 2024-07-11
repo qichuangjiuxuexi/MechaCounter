@@ -55,16 +55,6 @@ namespace Project.Scripts
         public int LayerLevel { get; }
         
         /// <summary>
-        /// 技能威力
-        /// </summary>
-        public int AbilityDfs { get; }
-        
-        /// <summary>
-        /// 消耗魔力
-        /// </summary>
-        public int CostMp { get; }
-        
-        /// <summary>
         /// 能源核心适配等级
         /// </summary>
         public HashSet<int> EnergyCoreAdaptLevel { get; }
@@ -72,8 +62,8 @@ namespace Project.Scripts
         /// <summary>
         /// 携带招式
         /// </summary>
-        public HashSet<ITrack> Tracks { get; }
-
+        public HashSet<ITrack> Tracks { get; }    
+        
         #region -----上阵属性-----
 
         /// <summary>
@@ -95,9 +85,33 @@ namespace Project.Scripts
 
         #endregion
     }
-    
-    
 
+    public interface IDamageSkill : ISkill
+    {
+        /// <summary>
+        /// 技能威力
+        /// </summary>
+        public int AbilityDfs { get; }
+        
+        /// <summary>
+        /// 消耗魔力
+        /// </summary>
+        public int CostMp { get; }
+    }
+    
+    public interface ISpeedAndBuffSkill : ISkill
+    {
+        public bool IsMainSkill { get; }
+    }
+
+    public interface ISpeedSkill : ISpeedAndBuffSkill
+    {
+        
+    }
+    public interface IBuffSkill : ISpeedAndBuffSkill
+    {
+        
+    }
 
     public class Skill
     {

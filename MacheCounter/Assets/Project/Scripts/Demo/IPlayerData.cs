@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using WordGame.Utils;
 
 namespace Project.Scripts
@@ -232,11 +233,59 @@ namespace Project.Scripts
 
         public List<IEffect> SelfEffects;
 
+        public ISkill[] AtkSkills;
+        
+        public ISpeedSkill[] SpeedSkills;
+        
+        public IBuffSkill[] BuffSkills;
+
+        /// <summary>
+        /// 是否配置了伤害技能
+        /// </summary>
+        public bool HasSkills => AtkSkills is { Length: > 0 };
+
         public PlayerCounter(IPlayerData playerData)
         {
             PlayerData = playerData;
             Hp = PlayerData.Hp;
             Mp = PlayerData.Mp;
+            InitSkills();
+        }
+
+        public void InitSkills()
+        {
+            if (PlayerData.Skills is { Count: > 0 })
+            {
+                var atkSkills = PlayerData.Skills.Where(s => s.SkillType == ESkillType.DamageSkill).ToList();
+                if (atkSkills is { Count: > 0 })
+                {
+                    AtkSkills = new ISkill[atkSkills.Count];
+                    for (var i = 0; i < atkSkills.Count; i++)
+                    {
+                        AtkSkills[i] = atkSkills[i];
+                    }
+                }
+
+                var speedSkills = PlayerData.Skills.Where(s => s.SkillType == ESkillType.Speed).ToList();
+                if (speedSkills is { Count: > 0 })
+                {
+                    SpeedSkills = new ISpeedSkill[speedSkills.Count];
+                    for (var i = 0; i < speedSkills.Count; i++)
+                    {
+                        SpeedSkills[i] = speedSkills[i] as ISpeedSkill;
+                    }
+                }
+
+                var buffSkills = PlayerData.Skills.Where(s => s.SkillType == ESkillType.DamageSkill).ToList();
+                if (buffSkills is { Count: > 0 })
+                {
+                    BuffSkills = new IBuffSkill[buffSkills.Count];
+                    for (var i = 0; i < buffSkills.Count; i++)
+                    {
+                        BuffSkills[i] = buffSkills[i] as IBuffSkill;
+                    }
+                }
+            }
         }
 
         public List<IEffect> GetAtkEffects()
