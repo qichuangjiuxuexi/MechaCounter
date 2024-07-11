@@ -5,7 +5,7 @@ public class MacheCounter : Architecture<MacheCounter>
 {
     protected override void Init()
     {
-        RegisterSystem<IEventSystem>(new EventMpger());
-        RegisterSystem<IResourceSystem>(new ResourceMpger());
+        //RegisterSystem<IEventSystem>(new EventMpger());
+        //RegisterSystem<IResourceSystem>(new ResourceMpger());
     }
 }

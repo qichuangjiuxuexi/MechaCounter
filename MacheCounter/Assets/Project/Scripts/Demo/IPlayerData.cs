@@ -95,6 +95,11 @@ namespace Project.Scripts
         /// 聚能
         /// </summary>
         public long Speed { get; }
+
+        /// <summary>
+        /// 技能列表
+        /// </summary>
+        public HashSet<ISkill> Skills { get; }
     }
     
     /// <summary>
@@ -198,6 +203,46 @@ namespace Project.Scripts
         {
             Type = (EAttributeType)type;
             Num = num;
+        }
+    }
+
+    public class PlayerCounter
+    {
+        public IPlayerData PlayerData { get; private set; }
+        
+        /// <summary>
+        /// 每秒聚气进度
+        /// </summary>
+        public float Speed { get; }
+        
+        /// <summary>
+        /// 聚气进度
+        /// </summary>
+        public float EnergyNum { get; private set; }
+        
+        /// <summary>
+        /// 当前血量
+        /// </summary>
+        public long Hp { get; private set; }
+        
+        /// <summary>
+        /// 当前蓝量
+        /// </summary>
+        public long Mp { get; private set; }
+
+        public List<IEffect> SelfEffects;
+
+        public PlayerCounter(IPlayerData playerData)
+        {
+            PlayerData = playerData;
+            Hp = PlayerData.Hp;
+            Mp = PlayerData.Mp;
+        }
+
+        public List<IEffect> GetAtkEffects()
+        {
+            var atkEffects = new List<IEffect>();
+            return atkEffects;
         }
     }
 }

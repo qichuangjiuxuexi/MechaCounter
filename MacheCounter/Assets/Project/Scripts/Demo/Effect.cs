@@ -22,8 +22,25 @@
         LoseMp = 1 << 15,
         Break = 1 << 16,
         DeBuff = AttributeReduce | Poisoning | Bleed | Firing | Frostbite | LoseMp | Break,
-        Aot = Poisoning | Bleed | Firing | Frostbite,
-        DoubleHit = 1 << 17
+        Frozen = 1 << 17,
+        Aot = Poisoning | Bleed | Firing | Frostbite | Frozen,
+        DoubleHit = 1 << 18
+    }
+
+    public enum ETriggerTime
+    {
+        /// <summary>
+        /// 立即触发
+        /// </summary>
+        Now,
+        /// <summary>
+        /// 回合开始前
+        /// </summary>
+        BeforeRound,
+        /// <summary>
+        /// 回合结束
+        /// </summary>
+        AfterRound
     }
 
     /// <summary>
@@ -54,7 +71,7 @@
         /// <summary>
         /// 触发时机
         /// </summary>
-        public int EffectTime { get; }
+        public ETriggerTime TriggerTime { get; }
 
         /// <summary>
         /// 效果生效
