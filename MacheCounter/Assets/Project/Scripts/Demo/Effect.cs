@@ -54,6 +54,11 @@
         public int Type { get; }
         
         /// <summary>
+        /// 优先级
+        /// </summary>
+        public int Priority { get; }
+        
+        /// <summary>
         /// 作用对象
         /// </summary>
         public int Target { get; }

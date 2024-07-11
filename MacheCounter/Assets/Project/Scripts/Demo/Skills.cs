@@ -84,6 +84,12 @@ namespace Project.Scripts
         public int Def { get; }
 
         #endregion
+
+        /// <summary>
+        /// 执行效果
+        /// </summary>
+        /// <returns></returns>
+        public List<IEffect> GetEffect();
     }
 
     public interface IDamageSkill : ISkill
