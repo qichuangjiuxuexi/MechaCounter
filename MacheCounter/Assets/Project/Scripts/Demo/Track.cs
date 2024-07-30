@@ -18,7 +18,7 @@ namespace Project.Scripts
         Back = 1 << 1,
 
         /// <summary>
-        /// 提升
+        /// 精进
         /// </summary>
         Enhance = 1 << 2,
 

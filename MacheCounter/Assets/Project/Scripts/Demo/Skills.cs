@@ -92,6 +92,9 @@ namespace Project.Scripts
         public List<IEffect> GetEffect();
     }
 
+    /// <summary>
+    /// 伤害类型技能
+    /// </summary>
     public interface IDamageSkill : ISkill
     {
         /// <summary>
@@ -105,18 +108,37 @@ namespace Project.Scripts
         public int CostMp { get; }
     }
     
+    /// <summary>
+    /// 内轻功
+    /// </summary>
     public interface ISpeedAndBuffSkill : ISkill
     {
+        /// <summary>
+        /// 是否是主修技能
+        /// </summary>
         public bool IsMainSkill { get; }
     }
-
-    public interface ISpeedSkill : ISpeedAndBuffSkill
-    {
-        
-    }
+    
+    /// <summary>
+    /// 内功
+    /// </summary>
     public interface IBuffSkill : ISpeedAndBuffSkill
     {
-        
+        /// <summary>
+        /// 回蓝量
+        /// </summary>
+        public int AddMp { get; }
+    }
+
+    /// <summary>
+    /// 轻功
+    /// </summary>
+    public interface ISpeedSkill : ISpeedAndBuffSkill
+    {
+        /// <summary>
+        /// 增加聚气值
+        /// </summary>
+        public int AddEnergyNum { get; }
     }
 
     public class Skill
