@@ -95,15 +95,33 @@
         /// <summary>
         /// 立即触发
         /// </summary>
-        Now,
+        Now = 1,
         /// <summary>
         /// 回合开始前
         /// </summary>
-        BeforeRound,
+        BeforeRound = 2,
         /// <summary>
         /// 回合结束
         /// </summary>
-        AfterRound
+        AfterRound = 3
+    }
+
+    public enum ETarget
+    {
+        /// <summary>
+        /// 自身
+        /// </summary>
+        Self = 1,
+        
+        /// <summary>
+        /// 目标玩家
+        /// </summary>
+        TargetPlayer = 2,
+        
+        /// <summary>
+        /// 地形
+        /// </summary>
+        Terrain = 3,
     }
 
     /// <summary>
@@ -124,7 +142,7 @@
         /// <summary>
         /// 作用对象
         /// </summary>
-        public int Target { get; }
+        public ETarget Target { get; }
         
         /// <summary>
         /// 效果等级

@@ -1,216 +1,98 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace Project.Scripts
 {
+    public interface IProcess
+    {
+        public void RoundBefore();
+
+        public void RoundStart();
+        public void RoundAfter();
+        public void RoundOver();
+        public bool IsOver();
+    }
     public class ProcessManager
     {
-        public List<PlayerCounter> PlayersData = new();
-        public List<int> PlayersRoundIndex = new();
-
         public int Round;
 
-        public int RoundPlayerIndex;
+        private List<IProcess> processes = new();
+        
+        private TerrainManager terrainManager;
+        private PlayerCounterManager playerCounterManager;
 
-        public void InitPlayer(List<IPlayerData> playersData)
-        {
-            for (var i = 0; i < playersData.Count; i++)
-            {
-                //todo：临时阵营
-                PlayersData.Add(new PlayerCounter(i, i / 2, playersData[i]));
-            }
-        }
-
-        public void Process()
+        public void OnInit()
         {
             Round = 0;
-            RoundPlayerIndex = 0;
-            OnPlayerRoundIndexSet();
-            while (PlayersData.Count(p => p.Hp > 0) == 1)
+            terrainManager = new TerrainManager();
+            processes.Add(terrainManager);
+            playerCounterManager = new PlayerCounterManager();
+            processes.Add(playerCounterManager);
+        }
+        
+        private bool IsOver()
+        {
+            //todo: 可能会有其他条件，例如指定回合数内
+            return processes.Any(t => t.IsOver());
+        }
+
+        private void OnBeforeGameStart()
+        {
+            
+        }
+
+        public void GameStart()
+        {
+            OnBeforeGameStart();
+            OnGameStart();
+            OnGameOver();
+        }
+
+        private void OnGameStart()
+        {
+            while (!IsOver())
             {
                 OnRoundBefore();
+                if (IsOver())
+                    break;
                 OnRoundStart();
+                if (IsOver())
+                    break;
                 OnRoundAfter();
+                if (IsOver())
+                    break;
+                OnRoundOver();
+                if (IsOver())
+                    break;
             }
         }
 
-        private void OnPlayerRoundIndexSet()
+        private void OnGameOver()
         {
-            PlayersData.Sort((a, b) => -a.PlayerData.Speed.CompareTo(b.PlayerData.Speed));
+            
         }
+
+        #region ---------- 轮次流程 ----------
 
         private void OnRoundBefore()
         {
             Round++;
-            //计算当前回合行动的角色
-            while (PlayersData[RoundPlayerIndex].Hp < 0)
-            {
-                RoundPlayerIndex = (RoundPlayerIndex + 1) % PlayersData.Count;
-            }
-            
-            var playerData = PlayersData[RoundPlayerIndex];
-            playerData.RoundBefore();
+            processes.ForEach(p => p.RoundBefore());
         }        
         private void OnRoundStart()
         {
-            var playerData = PlayersData[RoundPlayerIndex];
-            //生成本回合攻击目标
-            var activePlayer = PlayersData.Where(p => p.Hp > 0 && p.Camp != playerData.Camp).ToList();
-            var random = Random.Range(0, activePlayer.Count);
-            var targetPlayer = activePlayer[random];
-            var targetPlayerId = targetPlayer.Id;
-            playerData.RoundStart(targetPlayerId);
-            
-            //todo: 被选为目标后执行当前获得效果
-            //todo: 校验是否全局结束
+            processes.ForEach(p => p.RoundStart());
         }        
         private void OnRoundAfter()
         {
-            var playerData = PlayersData[RoundPlayerIndex];
-            playerData.RoundAfter();
-            //todo: 校验是否全局结束
-        }
-    }
-
-    /// <summary>
-    /// 回合内控制
-    /// </summary>
-    public class PlayerCounter
-    {
-        public int Id { get; private set; }
-        
-        public int Camp { get; private set; }
-        public IPlayerData PlayerData { get; private set; }
-        
-        /// <summary>
-        /// 每秒聚气进度
-        /// </summary>
-        public int Speed { get; }
-        
-        /// <summary>
-        /// 聚气进度
-        /// </summary>
-        public int EnergyNum { get; private set; }
-        
-        /// <summary>
-        /// 当前血量
-        /// </summary>
-        public long Hp { get; private set; }
-        
-        /// <summary>
-        /// 当前蓝量
-        /// </summary>
-        public long Mp { get; private set; }
-
-        /// <summary>
-        /// 自身挂载效果
-        /// </summary>
-        public List<IEffect> SelfEffects;
-
-        /// <summary>
-        /// 主伤害技能
-        /// </summary>
-        public ISkill[] AtkSkills;
-        
-        /// <summary>
-        /// 运气技能
-        /// </summary>
-        public ISpeedSkill[] SpeedSkills;
-        
-        /// <summary>
-        /// 内功技能
-        /// </summary>
-        public IBuffSkill[] BuffSkills;
-
-        /// <summary>
-        /// 是否配置了伤害技能
-        /// </summary>
-        public bool HasSkills => AtkSkills is { Length: > 0 };
-
-        public PlayerCounter(int id, int camp, IPlayerData playerData)
-        {
-            Id = id;
-            Camp = camp;
-            PlayerData = playerData;
-            Hp = PlayerData.Hp;
-            Mp = PlayerData.Mp;
-            InitSkills();
+            processes.ForEach(p => p.RoundAfter());
         }
 
-        private void InitSkills()
+        private void OnRoundOver()
         {
-            if (PlayerData.Skills is { Count: > 0 })
-            {
-                var atkSkills = PlayerData.Skills.Where(s => s.SkillType == ESkillType.DamageSkill).ToList();
-                if (atkSkills is { Count: > 0 })
-                {
-                    AtkSkills = new ISkill[atkSkills.Count];
-                    for (var i = 0; i < atkSkills.Count; i++)
-                    {
-                        AtkSkills[i] = atkSkills[i];
-                    }
-                }
-
-                var speedSkills = PlayerData.Skills.Where(s => s.SkillType == ESkillType.Speed).ToList();
-                if (speedSkills is { Count: > 0 })
-                {
-                    SpeedSkills = new ISpeedSkill[speedSkills.Count];
-                    for (var i = 0; i < speedSkills.Count; i++)
-                    {
-                        SpeedSkills[i] = speedSkills[i] as ISpeedSkill;
-                    }
-                }
-
-                var buffSkills = PlayerData.Skills.Where(s => s.SkillType == ESkillType.Buff).ToList();
-                if (buffSkills is { Count: > 0 })
-                {
-                    BuffSkills = new IBuffSkill[buffSkills.Count];
-                    for (var i = 0; i < buffSkills.Count; i++)
-                    {
-                        BuffSkills[i] = buffSkills[i] as IBuffSkill;
-                    }
-                }
-            }
+            processes.ForEach(p => p.RoundOver());
         }
 
-        public List<IEffect> GetAtkEffects()
-        {
-            var atkEffects = new List<IEffect>();
-            return atkEffects;
-        }
-
-        /// <summary>
-        /// 前置流程：计算Dot，计算回合前生效的Effect
-        /// </summary>
-        public void RoundBefore()
-        {
-            
-        }        
-        
-        /// <summary>
-        /// 回合种生效的Effect，计算当前回合触发的招式
-        /// </summary>
-        public void RoundStart(int targetPlayerId)
-        {
-            
-        }        
-        
-        /// <summary>
-        /// 结束后流程
-        /// </summary>
-        public void RoundAfter()
-        {
-            
-        }
-
-        /// <summary>
-        /// 被选定目标流程
-        /// </summary>
-        /// <param name="effects"></param>
-        public void TargetRound(List<IEffect> effects)
-        {
-            
-        }
+        #endregion ---------- 轮次流程 ----------
     }
 }

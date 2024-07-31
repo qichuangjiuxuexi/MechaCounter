@@ -124,6 +124,8 @@ namespace Project.Scripts
     /// </summary>
     public interface IBuffSkill : ISpeedAndBuffSkill
     {
+        ESkillType ISkill.SkillType => ESkillType.Buff;
+        
         /// <summary>
         /// 回蓝量
         /// </summary>
@@ -135,6 +137,8 @@ namespace Project.Scripts
     /// </summary>
     public interface ISpeedSkill : ISpeedAndBuffSkill
     {
+        ESkillType ISkill.SkillType => ESkillType.Speed;
+        
         /// <summary>
         /// 增加聚气值
         /// </summary>
