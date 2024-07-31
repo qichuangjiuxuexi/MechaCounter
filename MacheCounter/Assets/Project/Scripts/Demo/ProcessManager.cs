@@ -11,34 +11,40 @@ namespace Project.Scripts
         public void RoundAfter();
         public void RoundOver();
         public bool IsOver();
+
+        public void GetEffect(List<IEffect> effects);
+        public void BeforeGameStart();
+        public void GameOver();
     }
     public class ProcessManager
     {
         public int Round;
 
-        private List<IProcess> processes = new();
-        
-        private TerrainManager terrainManager;
-        private PlayerCounterManager playerCounterManager;
+        /// <summary>
+        /// 流程管道
+        /// </summary>
+        public List<IProcess> Processes = new();
 
-        public void OnInit()
+        /// <summary>
+        /// 生成待认领缓存效果
+        /// </summary>
+        public List<IEffect> Effects = new();
+
+        public void Init(List<IProcess> processes)
         {
-            Round = 0;
-            terrainManager = new TerrainManager();
-            processes.Add(terrainManager);
-            playerCounterManager = new PlayerCounterManager();
-            processes.Add(playerCounterManager);
+            Processes = processes;
         }
         
         private bool IsOver()
         {
             //todo: 可能会有其他条件，例如指定回合数内
-            return processes.Any(t => t.IsOver());
+            return Processes.Any(t => t.IsOver());
         }
 
         private void OnBeforeGameStart()
         {
-            
+            Round = 0;
+            Processes.ForEach(p => p.BeforeGameStart());
         }
 
         public void GameStart()
@@ -50,6 +56,7 @@ namespace Project.Scripts
 
         private void OnGameStart()
         {
+            //todo: 临时这样写，之后改为状态机
             while (!IsOver())
             {
                 OnRoundBefore();
@@ -69,7 +76,9 @@ namespace Project.Scripts
 
         private void OnGameOver()
         {
-            
+            Processes.ForEach(p => p.GameOver());
+            //todo：临时使用
+            PlayManager.Instance.GameOver();
         }
 
         #region ---------- 轮次流程 ----------
@@ -77,20 +86,52 @@ namespace Project.Scripts
         private void OnRoundBefore()
         {
             Round++;
-            processes.ForEach(p => p.RoundBefore());
+            foreach (var process in Processes)
+            {
+                process.GetEffect(Effects);
+                process.RoundBefore();
+                if (IsOver())
+                    break;
+            }
         }        
         private void OnRoundStart()
         {
-            processes.ForEach(p => p.RoundStart());
+            foreach (var process in Processes)
+            {
+                process.GetEffect(Effects);
+                process.RoundStart();
+                if (IsOver())
+                    break;
+            }
         }        
         private void OnRoundAfter()
         {
-            processes.ForEach(p => p.RoundAfter());
+            foreach (var process in Processes)
+            {
+                process.GetEffect(Effects);
+                process.RoundAfter();
+                if (IsOver())
+                    break;
+            }
         }
 
         private void OnRoundOver()
         {
-            processes.ForEach(p => p.RoundOver());
+            foreach (var process in Processes)
+            {
+                process.GetEffect(Effects);
+                process.RoundOver();
+                if (IsOver())
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// 获取目标是各自的类型
+        /// </summary>
+        private void GetSelfEffect()
+        {
+            
         }
 
         #endregion ---------- 轮次流程 ----------

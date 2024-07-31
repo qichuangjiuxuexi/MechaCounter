@@ -142,7 +142,12 @@
         /// <summary>
         /// 作用对象
         /// </summary>
-        public ETarget Target { get; }
+        public ETarget Target { get; set; }
+        
+        /// <summary>
+        /// 作用对象地形下标
+        /// </summary>
+        public int TerrainIndex { get; set;}
         
         /// <summary>
         /// 效果等级
@@ -162,7 +167,7 @@
         /// <summary>
         /// 效果生效
         /// </summary>
-        public void TakeEffect();
+        public void TakeEffect(PlayerCounter player);
     }
     
     public class Effect

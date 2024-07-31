@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using WordGame.Utils;
 
 namespace Project.Scripts
 {
@@ -9,12 +10,10 @@ namespace Project.Scripts
         public List<PlayerCounter> PlayersData = new();
 
         public int RoundPlayerIndex;
-
-        public void OnInit(List<IPlayerData> playersData)
+        public void Init(List<IPlayerData> playersData)
         {
             InitPlayer(playersData);
             OnPlayerRoundIndexSet();
-            RoundPlayerIndex = 0;
         }
         
         /// <summary>
@@ -46,18 +45,35 @@ namespace Project.Scripts
         {
             return PlayersData.Count(p => p.Hp > 0) == 1;
         }
-        
+
+        public void GetEffect(List<IEffect> effects)
+        {
+            if (effects is not { Count: > 0 }) return;
+            //拿到目标是各自的效果并挂载到自身
+            foreach (var playerCounter in PlayersData)
+            {
+                var terrainIndex = playerCounter.TerrainIndex;
+                playerCounter.GetEffect(effects
+                    .Where(e => e.Target == ETarget.TargetPlayer && e.TerrainIndex == terrainIndex).ToList());
+            }
+        }
+
+        public void BeforeGameStart()
+        {
+            RoundPlayerIndex = 0;
+        }
+
+        public void GameOver()
+        {
+            
+        }
+
         public void RoundBefore()
         {
-            while (PlayersData[RoundPlayerIndex].Hp < 0)
-            {
-                RoundPlayerIndex = (RoundPlayerIndex + 1) % PlayersData.Count;
-            }
             
             //计算当前回合行动的角色
             var playerData = PlayersData[RoundPlayerIndex];
             playerData.RoundBefore();
-            //todo: 校验是否全局结束
         }
 
         public void RoundStart()
@@ -89,7 +105,10 @@ namespace Project.Scripts
 
         public void RoundOver()
         {
-            
+            while (PlayersData[RoundPlayerIndex].Hp < 0)
+            {
+                RoundPlayerIndex = (RoundPlayerIndex + 1) % PlayersData.Count;
+            }
         }
     }
     
@@ -138,7 +157,7 @@ namespace Project.Scripts
         /// <summary>
         /// 自身挂载效果
         /// </summary>
-        public List<IEffect> SelfEffects;
+        public List<IEffect> SelfEffects = new();
 
         /// <summary>
         /// 主伤害技能
@@ -160,8 +179,19 @@ namespace Project.Scripts
         /// </summary>
         public bool HasSkills => AtkSkills is { Length: > 0 };
 
+        /// <summary>
+        /// 下次释放技能的下标
+        /// </summary>
+        public int SkillIndex;
+        
+        /// <summary>
+        /// 当前执行技能
+        /// </summary>
+        public IDamageSkill AtkSill;
+
         public PlayerCounter(int id, int camp, IPlayerData playerData)
         {
+            TerrainIndex = 4;
             Id = id;
             Camp = camp;
             PlayerData = playerData;
@@ -217,7 +247,21 @@ namespace Project.Scripts
         /// </summary>
         public void RoundBefore()
         {
+            //前置效果生效
+            var beforeEffect = SelfEffects.Where(e => e.TriggerTime == ETriggerTime.BeforeRound);
+            beforeEffect.ForEach(e => e.TakeEffect(this));
+
+            if (Hp <= 0)
+            {
+                //todo：发送阵亡事件
+                return;
+            }
             
+            //设置当前
+            AtkSill = AtkSkills[SkillIndex];
+            //todo: 主动位移
+            //位移至地形下标
+            var startTerrainIndex = AtkSill.StartTerrainIndex;
         }        
         
         /// <summary>
@@ -225,7 +269,6 @@ namespace Project.Scripts
         /// </summary>
         public List<IEffect> RoundStart(int targetPlayerId)
         {
-            //todo: 主动位移
 
             return GetEffects().Where(e => e.Target != ETarget.Self).ToList();
         }        
@@ -235,7 +278,10 @@ namespace Project.Scripts
         /// </summary>
         public void RoundAfter()
         {
+            //todo: 技能释放造成位移
             
+            //更新下次要释放的技能
+            SkillIndex = (SkillIndex + 1) % AtkSkills.Length;
         }
 
         /// <summary>
@@ -245,6 +291,20 @@ namespace Project.Scripts
         public void TargetRound(List<IEffect> effects)
         {
             
+        }
+
+        /// <summary>
+        /// 伤害计算
+        /// </summary>
+        public void OnDamageCalculate()
+        {
+            
+        }
+
+        public void GetEffect(List<IEffect> effects)
+        {
+            effects.ForEach(e => e.Target = ETarget.Self);
+            SelfEffects.AddRange(effects);
         }
     }
 }

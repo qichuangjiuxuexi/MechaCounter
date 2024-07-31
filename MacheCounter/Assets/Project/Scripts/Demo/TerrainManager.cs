@@ -5,7 +5,7 @@ namespace Project.Scripts
 {
     public class TerrainManager : IProcess
     {
-        public void InitTerrainView(TerrainView view)
+        public void Init(TerrainView view)
         {
             
         }
@@ -33,6 +33,21 @@ namespace Project.Scripts
         public bool IsOver()
         {
             return false;
+        }
+
+        public void GetEffect(List<IEffect> effects)
+        {
+            
+        }
+
+        public void BeforeGameStart()
+        {
+            
+        }
+
+        public void GameOver()
+        {
+            
         }
     }
 

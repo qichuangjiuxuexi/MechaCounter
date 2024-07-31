@@ -106,6 +106,11 @@ namespace Project.Scripts
         /// 消耗魔力
         /// </summary>
         public int CostMp { get; }
+        
+        /// <summary>
+        /// 释放起始移动到己方地形下标
+        /// </summary>
+        public int StartTerrainIndex { get; }
     }
     
     /// <summary>
@@ -149,6 +154,4 @@ namespace Project.Scripts
     {
         
     }
-
-        
 }
