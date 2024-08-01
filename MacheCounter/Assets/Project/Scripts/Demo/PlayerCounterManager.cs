@@ -53,8 +53,14 @@ namespace Project.Scripts
             foreach (var playerCounter in PlayersData)
             {
                 var terrainIndex = playerCounter.TerrainIndex;
-                playerCounter.GetEffect(effects
-                    .Where(e => e.Target == ETarget.TargetPlayer && e.TerrainIndex == terrainIndex).ToList());
+                var selfEffects = effects
+                    .Where(e => e.Target == ETarget.TargetPlayer && e.TerrainIndex == terrainIndex).ToList();
+                playerCounter.GetEffect(selfEffects);
+                for (var i = selfEffects.Count - 1 ; i >= 0; i--)
+                {
+                    var selfEffect = selfEffects[i];
+                    effects.Remove(selfEffect);
+                }
             }
         }
 
